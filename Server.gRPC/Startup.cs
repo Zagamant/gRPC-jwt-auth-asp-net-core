@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using Server.gRPC.Services;
 using Server.DAL;
 using Server.DAL.Models;
-using Server.Services.UserManagement;
+using Server.gRPC.Helpers;
 
 namespace Server.gRPC
 {
@@ -31,18 +34,36 @@ namespace Server.gRPC
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<Server.DAL.Models.User, Role>()
+            services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<UserDbContext>()
                 .AddDefaultTokenProviders();
 
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new UserManagementMappingProfile());
-            });
 
-            var mapper = mappingConfig.CreateMapper();
-            services.AddSingleton(mapper);
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+    
+            // configure jwt authentication
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
 
+            services.AddAuthorization();
 
         }
 
@@ -53,12 +74,15 @@ namespace Server.gRPC
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<Server.Services.UserManagement.UserService>();
+                endpoints.MapGrpcService<GreeterService>();
 
                 endpoints.MapGet("/", async context =>
                 {
