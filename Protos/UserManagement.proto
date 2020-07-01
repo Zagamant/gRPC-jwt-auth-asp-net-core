@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option csharp_namespace = "Server";
+
+service UserService {
+	rpc Authenticate (UserSignInRequest) returns (User);
+	rpc GetAll (Void) returns (stream User);
+	rpc GetById (UserIdRequest) returns (User);
+	rpc Create (UserSignUpRequest) returns (User);
+	rpc Update (UserUpdateRequest) returns (Void);
+	rpc Delete (UserIdRequest) returns (Void);
+}
+
+message UserSignInRequest {
+	message UserSignInInfo {
+		string UserName = 1;
+		string Password = 2;
+	}
+
+	UserSignInInfo user = 1;
+}
+
+message UserIdRequest {
+	int32 Id = 1;
+}
+
+message UserSignUpRequest {
+	string FirstName = 1;
+	string LastName = 2;
+	string UserName = 3;
+	string Email = 4;
+	string Password = 5;
+}
+
+message UserUpdateRequest {
+	int32 Id = 1;
+	string FirstName = 2;
+	string LastName = 3;
+	string UserName = 4;
+	string Email = 5;
+	string PasswordOld = 6;
+	string PasswordNew = 7;
+}
+
+message User {
+	int32 Id = 1;
+	string Role = 2;
+	string FirstName = 3;
+	string LastName = 4;
+	string UserName = 5;
+	string Email = 6;
+	string PasswordHash = 7;
+	bytes PasswordSalt = 8;
+}
+
+message Void {
+
+}
