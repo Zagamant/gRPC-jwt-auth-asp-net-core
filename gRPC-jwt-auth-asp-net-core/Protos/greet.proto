@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "gRPC_jwt_auth_asp_net_core";
+option csharp_namespace = "Server";
 
 package greet;
 

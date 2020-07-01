@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
-namespace gRPC_jwt_auth_asp_net_core
+namespace Server.API.Services
 {
     public class GreeterService : Greeter.GreeterBase
     {
