@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Server.API.Services;
+using Server.gRPC.Services;
 using Server.DAL;
 using Server.DAL.Models;
 
-namespace Server.API
+namespace Server.gRPC
 {
     public class Startup
     {

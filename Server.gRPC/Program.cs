@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Server.API
+namespace Server.gRPC
 {
     public class Program
     {
