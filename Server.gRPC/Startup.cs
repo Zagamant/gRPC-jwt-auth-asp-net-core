@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Server.gRPC.Services;
 using Server.DAL;
 using Server.DAL.Models;
+using Server.Services.UserManagement;
 
 namespace Server.gRPC
 {
@@ -33,6 +35,15 @@ namespace Server.gRPC
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<UserDbContext>()
                 .AddDefaultTokenProviders();
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new UserManagementMappingProfile());
+            });
+
+            var mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
 
         }
 
