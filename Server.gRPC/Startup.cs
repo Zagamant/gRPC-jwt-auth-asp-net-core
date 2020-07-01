@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Server.DAL;
 using Server.DAL.Models;
 using Server.gRPC.Helpers;
+using Server.gRPC.Services;
 
 namespace Server.gRPC
 {
@@ -38,6 +40,17 @@ namespace Server.gRPC
                 .AddDefaultTokenProviders();
 
 
+            // Auto Mapper Configurations
+            var mappingConfig = new MapperConfiguration(
+                mc =>
+                {
+                    mc.AddProfile(new UserManagementMappingProfile()); 
+
+                });
+
+            var mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
     
@@ -51,19 +64,13 @@ namespace Server.gRPC
                 })
                 .AddJwtBearer(x =>
                 {
-                    x.RequireHttpsMetadata = false;
-                    x.SaveToken = true;
-                    x.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
+                    var validator = new JwtTokenValidator();
+                    x.SecurityTokenValidators.Add(validator);
                 });
 
             services.AddAuthorization();
 
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

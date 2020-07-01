@@ -11,6 +11,7 @@ using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Server.DAL;
 using Server.DAL.Models;
@@ -36,12 +37,12 @@ namespace Server.gRPC.Services
         /// <param name="mapper">A <see cref="Mapper" /></param>
         /// <param name="logger">A <see cref="Logger" /></param>
         /// <param name="appSettings">A <see cref="AppSettings" /></param>
-        public UserService(UserDbContext context, IMapper mapper, ILogger<UserService> logger, AppSettings appSettings)
+        public UserService(UserDbContext context, IMapper mapper, ILogger<UserService> logger, IOptions<AppSettings> appSettings)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
         [AllowAnonymous]
@@ -51,28 +52,16 @@ namespace Server.gRPC.Services
                 return null;
 
             var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.User.UserName);
-            var userResponse = _mapper.Map<User>(user);
             if(user == null)
                 return null;
 
+            var userResponse = _mapper.Map<User>(user);
+            
             if(!VerifyPasswordHash(request.User.Password, Convert.FromBase64String(user.PasswordHash), user.PasswordSalt))
                 throw new ArgumentException("Username or password is incorrect");
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
+            
+            var tokenString = GetJwtToken(user.Id);
+            userResponse.JWT = tokenString;
             
             return userResponse;
         }
@@ -96,6 +85,7 @@ namespace Server.gRPC.Services
         }
 
         /// <inheritdoc />
+        [AllowAnonymous]
         public override async Task<User> Create(UserSignUpRequest request, ServerCallContext context)
         {
             var user = _mapper.Map<User>(request);
@@ -221,6 +211,26 @@ namespace Server.gRPC.Services
             using var hmac = new HMACSHA512(storedSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             return !computedHash.Where((t, i) => t != storedHash[i]).Any();
+        }
+
+        private string GetJwtToken(int id)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, id.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return tokenString;
         }
 
         #endregion

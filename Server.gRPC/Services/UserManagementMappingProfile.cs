@@ -11,6 +11,8 @@ namespace Server.gRPC.Services
         {
             CreateMap<User, UserSignUp>();
             CreateMap<UserSignUp, User>();
+            CreateMap<User, UserSignUpRequest>();
+            CreateMap<UserSignUpRequest, User>();
             CreateMap<User, UserSignIn>();
             CreateMap<UserSignIn, User>();
             CreateMap<User, UserUpdate>();

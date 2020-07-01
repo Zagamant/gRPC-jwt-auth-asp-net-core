@@ -51,6 +51,7 @@ message User {
 	string Email = 6;
 	string PasswordHash = 7;
 	bytes PasswordSalt = 8;
+	string JWT = 9;
 }
 
 message Empty {
