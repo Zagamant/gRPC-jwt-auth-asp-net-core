@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Server.DAL\Server.DAL.csproj" />
+    <ProjectReference Include="..\Server.Services.Models\Server.Services.Models.csproj" />
+  </ItemGroup>
+
+</Project>
