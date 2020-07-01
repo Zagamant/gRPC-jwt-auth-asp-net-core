@@ -12,6 +12,8 @@ namespace Server.Services.UserManagement
             CreateMap<UserSignUp, User>();
             CreateMap<User, UserSignIn>();
             CreateMap<UserSignIn, User>();
+            CreateMap<User, UserUpdate>();
+            CreateMap<UserUpdate, User>();
         }
     }
 }
