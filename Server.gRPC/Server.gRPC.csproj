@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\Protos\UserManagement.proto" GrpcServices="Server" Link="Protos\UserManagement.proto" />
+    <Protobuf Include="Protos\UserManagement.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.29.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
@@ -23,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Server.DAL\Server.DAL.csproj" />
-    <ProjectReference Include="..\Server.Services\Server.Services.csproj" />
+    <ProjectReference Include="..\Server.Services.Models\Server.Services.Models.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
