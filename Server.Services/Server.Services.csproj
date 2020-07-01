@@ -5,7 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Protobuf Include="..\Protos\UserManagement.proto" GrpcServices="Server" Link="Protos\UserManagement.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.29.0" />
   </ItemGroup>
 
   <ItemGroup>

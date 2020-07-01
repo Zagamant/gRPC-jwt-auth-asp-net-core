@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Server.gRPC.Services;
 using Server.DAL;
 using Server.DAL.Models;
 using Server.Services.UserManagement;
@@ -32,7 +31,7 @@ namespace Server.gRPC
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<User, Role>()
+            services.AddIdentity<Server.DAL.Models.User, Role>()
                 .AddEntityFrameworkStores<UserDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -59,7 +58,7 @@ namespace Server.gRPC
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<Server.Services.UserManagement.UserService>();
 
                 endpoints.MapGet("/", async context =>
                 {
