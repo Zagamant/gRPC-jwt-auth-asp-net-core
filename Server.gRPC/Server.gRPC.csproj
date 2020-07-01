@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\Protos\UserManagement.proto" GrpcServices="Server" Link="Protos\UserManagement.proto" />
+    <Protobuf Include="Protos\UserManagement.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Server.DAL\Server.DAL.csproj" />
-    <ProjectReference Include="..\Server.Services\Server.Services.csproj" />
+    <ProjectReference Include="..\Server.Services.Models\Server.Services.Models.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

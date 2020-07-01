@@ -4,11 +4,11 @@ option csharp_namespace = "Server";
 
 service UserService {
 	rpc Authenticate (UserSignInRequest) returns (User);
-	rpc GetAll (Void) returns (stream User);
+	rpc GetAll (Empty) returns (stream User);
 	rpc GetById (UserIdRequest) returns (User);
 	rpc Create (UserSignUpRequest) returns (User);
-	rpc Update (UserUpdateRequest) returns (Void);
-	rpc Delete (UserIdRequest) returns (Void);
+	rpc Update (UserUpdateRequest) returns (Empty);
+	rpc Delete (UserIdRequest) returns (Empty);
 }
 
 message UserSignInRequest {
@@ -53,6 +53,6 @@ message User {
 	bytes PasswordSalt = 8;
 }
 
-message Void {
+message Empty {
 
 }
