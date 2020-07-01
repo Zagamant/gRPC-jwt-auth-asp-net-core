@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Google.Protobuf;
 using Origin = Server.DAL.Models;
 using Server.Services.Models.UserManagement;

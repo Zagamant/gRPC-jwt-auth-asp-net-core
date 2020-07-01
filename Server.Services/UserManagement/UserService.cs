@@ -21,7 +21,6 @@ namespace Server.Services.UserManagement
         private readonly IMapper _mapper;
         private readonly ILogger<UserService> _logger;
 
-
         /// <summary>
         /// Initialize a new instance of the <see cref="UserService" /> class with specified <see cref="UserDbContext" />.
         /// </summary>
@@ -87,6 +86,7 @@ namespace Server.Services.UserManagement
             var originUser = _mapper.Map<DAL.Models.User>(user);
 
             await _context.Users.AddAsync(originUser);
+
             await _context.SaveChangesAsync();
 
             return user;
@@ -96,9 +96,10 @@ namespace Server.Services.UserManagement
         public override async Task<Void> Update(UserUpdateRequest request, ServerCallContext context)
         {
             var user = await _context.Users.FindAsync(request.Id);
-
+            
             if(user == null)
                 throw new ArgumentException("User not found");
+
 
             if(!string.IsNullOrWhiteSpace(request.UserName) && request.UserName != user.UserName)
             {
@@ -147,6 +148,7 @@ namespace Server.Services.UserManagement
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return new Void();
+
         }
 
         #region private helper methods
